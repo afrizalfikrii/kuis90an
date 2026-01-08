@@ -43,8 +43,11 @@ function App() {
   useEffect(() => {
     if (gameState === 'menu' || gameState === 'leaderboard') {
       audioManager.playBgMusic('menu');
-    } else if (gameState === 'playing' || gameState === 'feedback') {
+    } else if (gameState === 'playing') {
       audioManager.playBgMusic('gameplay');
+    } else if (gameState === 'feedback') {
+      // Pause music saat feedback overlay
+      audioManager.stopBgMusic();
     } else if (gameState === 'gameover') {
       audioManager.stopBgMusic();
       audioManager.playSound('gameover');
