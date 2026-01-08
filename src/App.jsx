@@ -6,6 +6,7 @@ import Leaderboard from './components/Leaderboard';
 import FeedbackOverlay from './components/FeedbackOverlay';
 import { QUESTIONS } from './data/questions';
 import { getTopScores } from './firebase/leaderboard';
+import { audioManager } from './utils/audioManager';
 import './index.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   const [highScore, setHighScore] = useState(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [timeLeft, setTimeLeft] = useState(20); // Timer 20 detik per pertanyaan
+  const [isMuted, setIsMuted] = useState(false);
 
   // Fetch high score on mount
   useEffect(() => {
@@ -37,6 +39,21 @@ function App() {
     }
   }, [gameState, timeLeft]);
 
+  // Music control based on game state
+  useEffect(() => {
+    if (gameState === 'menu' || gameState === 'leaderboard') {
+      audioManager.playBgMusic('menu');
+    } else if (gameState === 'playing' || gameState === 'feedback') {
+      audioManager.playBgMusic('gameplay');
+    } else if (gameState === 'gameover') {
+      audioManager.stopBgMusic();
+      audioManager.playSound('gameover');
+    } else if (gameState === 'win') {
+      audioManager.stopBgMusic();
+      audioManager.playSound('gamewin');
+    }
+  }, [gameState]);
+
   const fetchHighScore = async () => {
     try {
       const topScores = await getTopScores(1);
@@ -46,6 +63,11 @@ function App() {
     } catch (error) {
       console.error('Error fetching high score:', error);
     }
+  };
+
+  const toggleMute = () => {
+    const muted = audioManager.toggleMute();
+    setIsMuted(muted);
   };
 
   // --- HANDLERS ---
@@ -131,7 +153,7 @@ function App() {
       {gameState === 'feedback' && <FeedbackOverlay feedbackType={feedbackType} />}
       
       {/* Main Content */}
-      {gameState === 'menu' && <MainMenu onStart={startGame} highScore={highScore} onViewLeaderboard={handleViewLeaderboard} />}
+      {gameState === 'menu' && <MainMenu onStart={startGame} highScore={highScore} onViewLeaderboard={handleViewLeaderboard} isMuted={isMuted} onToggleMute={toggleMute} />}
       
       {(gameState === 'playing' || gameState === 'feedback') && (
         <GameScreen 

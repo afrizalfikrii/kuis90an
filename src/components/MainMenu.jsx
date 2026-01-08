@@ -1,7 +1,7 @@
 import React from 'react';
-import { Play, Music, Trophy, Award } from 'lucide-react';
+import { Play, Music, Trophy, Award, Volume2, VolumeX } from 'lucide-react';
 
-const MainMenu = ({ onStart, highScore, onViewLeaderboard }) => {
+const MainMenu = ({ onStart, highScore, onViewLeaderboard, isMuted, onToggleMute }) => {
   return (
     <div className="text-center max-w-lg w-full relative z-10">
       <div className="bg-white border-4 border-black p-8 relative mb-8 hard-shadow-lg shadow-retro-pink">
@@ -38,9 +38,17 @@ const MainMenu = ({ onStart, highScore, onViewLeaderboard }) => {
       </div>
       
       <div className="flex justify-center gap-4">
-        <div className="bg-retro-purple border-4 border-black p-2 hard-shadow-sm">
-          <Music className="w-6 h-6" />
-        </div>
+        <button
+          onClick={onToggleMute}
+          className="bg-retro-purple border-4 border-black p-2 hard-shadow-sm hover:bg-retro-pink transition-colors"
+          title={isMuted ? "Unmute Music" : "Mute Music"}
+        >
+          {isMuted ? (
+            <VolumeX className="w-6 h-6 text-white" />
+          ) : (
+            <Volume2 className="w-6 h-6 text-white" />
+          )}
+        </button>
         <div className="bg-retro-yellow border-4 border-black px-4 py-2 font-mono font-bold hard-shadow-sm">
           HIGHSCORE: {highScore.toString().padStart(4, '0')}
         </div>
